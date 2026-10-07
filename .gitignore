@@ -1,0 +1,15 @@
+# 编译产物
+*.exe
+*.o
+*.obj
+*.out
+
+# 临时/归档，不进仓库
+_later/
+_teacher/_tmp/
+_teacher/answer/
+.vscode/*.log
+
+# 编辑器杂物
+*.swp
+*~
