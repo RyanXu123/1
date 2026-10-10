@@ -1,4 +1,4 @@
-/* 读入一串字符（社团题五的第一步）
+/* 读入一串字符（考核题五的第一步）
  * 编译：gcc -Wall -Wextra p40_read_string.c -o p40_read_string.exe
  */
 #include <stdio.h>

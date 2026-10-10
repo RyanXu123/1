@@ -33,7 +33,7 @@
 **发出去的 `.c` 也要过闸门**，不能只把关聊天草稿：
 
 ```
-node <本机路径>\.codex\tools\lesson-gate.mjs --file <要发的 .c>
+node %USERPROFILE%\.codex\tools\lesson-gate.mjs --file <要发的 .c>
 ```
 
 `lesson-gate` 的盲区：它认不出 printf 的**宽度修饰**（`%2d`、`%-5s` 这种）。
