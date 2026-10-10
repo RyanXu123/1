@@ -49,8 +49,17 @@ try {
     }
 
     & $git add -A
+    if ($LASTEXITCODE -ne 0) { Write-Log ("git add 失败，退出码 " + $LASTEXITCODE); exit 1 }
+
     & $git commit -q -m $Message
+    if ($LASTEXITCODE -ne 0) { Write-Log ("git commit 失败，退出码 " + $LASTEXITCODE); exit 1 }
+
     & $git push
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log ("直连推送失败，退出码 " + $LASTEXITCODE + "；改走本地代理 127.0.0.1:7897 再试一次")
+        & $git -c http.proxy=http://127.0.0.1:7897 push
+        if ($LASTEXITCODE -ne 0) { Write-Log ("走代理也没推上去，退出码 " + $LASTEXITCODE); exit 1 }
+    }
     Write-Log ("已推送：" + $Message)
 }
 catch {
