@@ -60,6 +60,13 @@ void rb_show(void)
 
 int main(void)
 {
+    int box1[100];
+    printf("=== 先输入几个数 ===\n");
+    for(int i=0;i<100;i++)
+    {
+        scanf("%d",&box1[i]);
+    }
+    
     printf("=== 先写 1 2 3 ===\n");
     rb_push(1);
     rb_push(2);

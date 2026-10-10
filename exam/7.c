@@ -1,7 +1,7 @@
 #include<stdio.h>
 int main(){
     int n;
-    printf("giveme1num");
+    printf("giveme1奇数");
     scanf("%d",&n);
     int mid=(n+1)/2;
     for(int i=1;i<=mid;i++){
@@ -9,6 +9,7 @@ int main(){
             printf(" ");
         }
         for(int j=1;j<=2*i-1;j++){
+
             printf("*");
         }
         printf("\n");
@@ -23,4 +24,3 @@ int main(){
     }
    
 }
-
