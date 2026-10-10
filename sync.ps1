@@ -14,6 +14,18 @@ param([string]$Message)
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
+# 桌面那份易错点台账，同步前先抄一份进仓库（主人只改桌面那份，仓库这份是镜子）
+$ledgerSrc = Join-Path $env:USERPROFILE "Desktop\新建文件夹\C语言易错点.txt"
+$ledgerDst = Join-Path $PSScriptRoot "C语言易错点.txt"
+try {
+    if (Test-Path $ledgerSrc) {
+        Copy-Item -LiteralPath $ledgerSrc -Destination $ledgerDst -Force
+    }
+}
+catch {
+    Write-Host ("抄台账时出错：" + $_.Exception.Message)
+}
+
 $logDir = Join-Path $PSScriptRoot "_teacher\_tmp"
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 $logFile = Join-Path $logDir "sync.log"
