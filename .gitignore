@@ -13,3 +13,28 @@ _teacher/answer/
 # 编辑器杂物
 *.swp
 *~
+# 2026-10-10 主人点名：下面这些是随手写的碎片、不相干的东西，不进仓库
+# （文件本身还在本地硬盘上，只是不上传）
+/1.cpp
+/2.cpp
+/5.cpp
+/6.cpp
+/7.cpp
+/8.cpp
+/9.cpp
+/10.cpp
+/11.cpp
+/hello.cpp
+/10086.c
+/212.c
+/91.c
+/12.c
+/12.1.c
+/box.c
+/dor.c
+/p12_enum_ryan.c
+/ti1.c
+/ti2.c
+/ti6.c
+/ti9.c
+*.bak-*
