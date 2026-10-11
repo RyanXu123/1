@@ -40,7 +40,7 @@ int grabMine(char line[], char out[], int outSize)
         return -1;                               /* A 和 E 挨着，中间是空的 */
     }
 
-    out[j] = '\0';                               /* 收尾：自己拼出来的串，\0 得自己补 */
+     out[j] = '\0';        /* 收尾：自己拼出来的串，\0 得自己补 */ 
     return j;                                    /* 顺便把长度带出去 */
 }
 
@@ -77,7 +77,7 @@ int grabStrchr(char line[], char out[], int outSize)
 int main(void)
 {
     /* 六行样张：正常 / 短密码 / A 和 E 挨着 / 没有包头 / 没有包尾 / 只有 A 和 E */
-    char *lines[6] = {"A12345678E", "AabcE", "A12345678", "12345678", "A12345678X", "AE"};
+    char *lines[6] = {"A12345678E", "AabcE", "A12345678", "12345678", "A12345678X", "E12345A34E"};
     char box1[20];
     char box2[20];
     int k;
