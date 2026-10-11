@@ -76,15 +76,15 @@ int grabStrchr(char line[], char out[], int outSize)
 
 int main(void)
 {
-    /* 六行样张：正常 / 短密码 / A 和 E 挨着 / 没有包头 / 没有包尾 / 只有 A 和 E */
-    char *lines[6] = {"A12345678E", "AabcE", "A12345678", "12345678", "A12345678X", "E12345A34E"};
+    /* 七行样张：正常 / 短密码 / 没有包尾 / 没有包头 / 包尾不是 E / A 和 E 挨着 / E 在前（顺序反了）*/
+    char *lines[7] = {"A12345678E", "AabcE", "A12345678", "12345678", "A12345678X", "AE", "E12345A34E"};
     char box1[20];
     char box2[20];
     int k;
 
     printf("规矩：包头 A，包尾 E，中间那段就是密码。\n\n");
 
-    for (k = 0; k < 6; k = k + 1) {
+    for (k = 0; k < 7; k = k + 1) {
         int r1 = grabMine(lines[k], box1, 20);
         int r2 = grabStrchr(lines[k], box2, 20);
 
