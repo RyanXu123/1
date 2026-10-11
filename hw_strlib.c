@@ -18,8 +18,8 @@ int myLen(char s[])
 }
 
 int myCmp(char a[], char b[])
-{
-    return 0;
+{for(int i=0;i)
+    
 }
 
 void myCopy(char dst[], char src[])
