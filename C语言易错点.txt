@@ -745,8 +745,9 @@
     原因：数组名 box 等于 &box[0]，那一行只往第 0 格放了一个数；
           %d 一次只吃一个数。而且这样写**编译零警告**（box 的类型正好是 %d 要的 int*），
           错在逻辑不在类型 —— 没警告不代表对。
+          那 19 个数没丢，还在输入缓冲区里排着队，只是没人再来领。
     规矩：格子写成 box[i]，scanf 里就写 &box[i]；只有整个数组名单独当"起点地址"用时才不带 &。
-    探针：cpp-demo\_teacher\_tmp\t_array_scanf.c（原样） / t_array_fix.c（改后）
+    探针：cpp-demo\_teacher\_tmp\_archive_20261009\t_array_scanf.c（原样） / t_array_fix.c（改后）
 
   现象二：读 n 个数的程序"一直不生成 print"。
     先看代码结构：所有 printf 都堆在最后 → 输入没读完，它一个字都不会打。

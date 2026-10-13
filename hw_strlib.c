@@ -18,8 +18,18 @@ int myLen(char s[])
 }
 
 int myCmp(char a[], char b[])
-{for(int i=0;i)
-    
+{
+    int i=0;
+    while(a[i]!=0&&b[i]!=0){
+        if(a[i]>b[i]){
+            return 1;
+        }else if(a[i]<b[i]){
+            return -1;
+        }if(a[i]==b[i]){
+            i++;
+        }
+        
+    }
 }
 
 void myCopy(char dst[], char src[])
