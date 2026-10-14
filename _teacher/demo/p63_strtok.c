@@ -11,7 +11,7 @@
 
 int main(void)
 {
-    char line[40] = "set Ryan";     /* 从串口收来的那一行 */
+    char line[40] = "set Ryan hello";     /* 从串口收来的那一行 */
     char work[40];                  /* 副本：strtok 会改串，原件留着 */
     char *words[8];                 /* 一排装门牌号的格子：每一格指着一个词 */
     int n = 0;                      /* 收进了几个词 */

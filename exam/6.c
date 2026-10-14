@@ -1,9 +1,15 @@
 #include<stdio.h>
 int main(){
- int a[5]={100,91,78,2,3};
+ int a[100];
+ int n;
+ printf("giveme n num");
+ scanf("%d",&n);
+ for(int i=0;i<n;i++){
+  scanf("%d",&a[i]);
+ }
  int pos=0;
  int min=a[0];
- for(int i=0;i<5;i++){if(a[i]<min){pos=i;
+ for(int i=0;i<n;i++){if(a[i]<min){pos=i;
  
   
   min=a[i];}}

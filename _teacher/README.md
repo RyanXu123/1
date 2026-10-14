@@ -59,6 +59,12 @@ node %USERPROFILE%\.codex\tools\lesson-gate.mjs --file <要发的 .c>
 
 工具备注：
 - 可视化碎片写完，用可视化 skill 自带的 `scripts/render.py <fragment> <out> --force` 出 standalone 页面。
+- **出到哪**（2026-10-14 踩坑后定）：只写**线程目录** `~\.codex\visualizations\<年>\<月>\<日>\<线程id>\<名字>.html`
+  （线程 id 从 `~\.codex\sessions\<年>\<月>\<日>\rollout-*.jsonl` 的文件名尾巴上抄，日期是建线那天）。
+  自己新建的夹子（如 `visualizations\2026\10\14\cmdline-pipeline\`）宿主读不到，界面直接报
+  「可视化内部发生错误」——文件其实没坏，换到线程目录重出一次就好。
+- `render.py` 的页面标题取自**碎片文件名**：碎片叫 `cmdline-pipeline.frag.html` 会出成
+  「Cmdline Pipeline.frag」；先复制成 `cmdline-pipeline.html` 再渲染，标题才干净。
 - 本机 `cua.listBrowsers()` 里只有 `Codex In-app Browser`（iab），**没有 Edge**；
   主人要求「用 Edge 打开」时要么请他手动粘地址，要么只能用应用内浏览器顶上。
 - 临时起的静态服务记得记 pid 和端口，主人看完就关。

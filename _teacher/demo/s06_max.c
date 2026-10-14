@@ -1,6 +1,6 @@
 #include <stdio.h>
 int main(){
-    int a[5]={1,3,7,80,2};
+    int a[5]
     int max=a[0];
     int pos=0;
     for(int i=0;i<5;i++){
