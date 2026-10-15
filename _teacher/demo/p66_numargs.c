@@ -46,6 +46,7 @@ int main(void)
         } else if (strcmp(words[0], "where") == 0) {
             printf("现在的位置：(%d, %d)\n", x, y);
         } else if (strcmp(words[0], "move") == 0) {
+            
             if (n < 3) {
                 printf("move 后面要跟两个数。\n");
             } else {
