@@ -947,3 +947,181 @@
       长度是返回值（循环数了几个字节），字符串是"从首字节走到第一个 '\0'"。
     真跑在没填过的局部数组 char box1[20]; 上，里面是栈上的残留字节，打出来就是那串乱码。
     探针：_teacher\_tmp\p60_no_terminator.c
+
+
+  107. `%s` 接到了 int：打出 `(null)` 或者直接崩（2026-10-17）
+    主人改的（p65 那条命令菜单）：printf("备注也收下了：%s\n", words[2]) —— 把 words[2] 换成了 n，
+      输入 `set 3 2 3`，屏幕上出的是「备注也收下了：(null)」。
+    编译器其实喊了，只是没细看（gcc 16.1.0 -Wall）：
+      warning: format '%s' expects argument of type 'char *', but argument 2 has type 'int' [-Wformat=]
+    真因：%s 要的是一张门牌号（char *），n 里装的是整数。printf 拿到 2 就当成地址 0x2 去读，读不到东西。
+      本机实测是直接崩（退出码 1，一个字都不打）；主人那台打出 (null)。同一个错两种结果，这就是未定义行为：
+      不能拿"我这儿没崩"当它对的理由。
+    规矩：格式符和实参必须配对。%d 配 int，%ld 配 long，%s 配 char *，%c 配 char。
+    探针：_teacher\_tmp\t_pct_s_int.c
+
+  108. 拿门牌号去跟 '9' 比大小（2026-10-17）
+    主人写的（p66）：
+      if (words[n+1] > '9' && words[n+1] < '0') { printf("yaoshuzi"); }
+    编译器说（gcc 16.1.0 -Wall，同一行两条）：
+      warning: comparison between pointer and integer
+    真因两层。第一层：words[n+1] 是 char *，是门牌号；'9' 是整数 57。拿地址跟编号比，编译器不知道该比谁。
+      第二层更干脆：一个字符不可能既大于 '9'（57）又小于 '0'（48），这条条件恒假，编过了也永远不打印。
+    规矩：要比字符，先顺着门牌号开门 —— words[1][k] 才是那一格里的字符。
+    探针：_teacher\_tmp\t_ptr_compare.c
+
+  109. 参数名和局部变量重名：`int *r` 撞上 `long r`（2026-10-17）
+    主人写的 setCircle 第一版：
+      int setCircle(char s[], int *r)
+      { ... long r; ... }
+    编译器说：
+      error: 'r' redeclared as different kind of symbol
+      note: previous definition of 'r' with type 'int *'
+    真因：参数 int *r 已经在这个函数里占了 r 这个名字，函数体里再写 long r，等于同一个屋里挂两块牌子。
+    规矩：参数名是函数自己屋里的名字，屋里不许重名。要存中间值就另起一个 —— 本座用的是 v。
+    探针：_teacher\_tmp\err_hw_circle.c
+
+  110. 把 `inRange` 的声明当成了调用（2026-10-17）
+    主人写的：
+      int setCircle(char s[], int *r)
+      { int inRange(long r, long lo, long hi); ... if (r > lo && r <= hi) ...
+    编译器说：
+      error: 'lo' undeclared (first use in this function)
+      error: 'hi' undeclared (first use in this function)
+    真因：那一行是"声明"——只告诉编译器有这么个函数，不会把 lo、hi 变出来。位置也放错了：
+      inRange 是文件里已经写好的函数，函数体里不必再声明一遍。
+    规矩：想用现成函数就直接调 inRange(v, 0, 1000)；声明归文件开头管。
+
+  111. `}if{` —— if 后面缺一对圆括号（2026-10-17）
+    主人写的：}if{r = strtol(s, &end, 10);
+    编译器说：
+      error: expected '(' before '{' token
+    真因：if 的形状是 if (条件) { ... }，条件必须包在圆括号里。写成 if{，编译器就不认识这个字。
+    规矩：if 后面永远是圆括号，判断条件住在里面。
+
+  112. 抄了 `readNum` 里的 `*out`（2026-10-17）
+    主人写的：*out = r;
+    编译器说：
+      error: 'out' undeclared (first use in this function)
+    真因：out 是 readNum 的参数名，搬不进 setCircle。setCircle 的盒子叫 r。
+    规矩：抄函数只抄结构，名字必须换成自己的。这一路最常见的错就是"连名字一起抄"。
+    探针：_teacher\_tmp\err_hw_circle.c（109~112 四个错全在里面）
+
+  113. 先写后查，报完错盒子已经脏了（2026-10-17）
+    对照件（本座写的）：先 *level = (int)strtol(s, &end, 10); 再回头查 end。
+    编译器一声不吭，跑出来（level 初值 7）：
+      [128] 交回 0，level = 128
+      [abc] 交回 2，level = 0      ← 报了错，盒子已经从 7 变成 0
+      [255] 交回 0，level = 255
+    真因：写和查顺序反了。strtol("abc") 交回 0，这一下已经写进盒子，后面查出来也收不回去。
+    规矩：值先落在草稿纸上（long v），三道门全过，才誊进正式盒子（*level = (int)v）。
+    探针：_teacher\_tmp\t_writefirst.c
+
+  114. `int *` 和 `long *` 不是同一种门牌（2026-10-17）
+    想省掉中间那个 long v 的时候，会写成 readNum(s, &level)（level 是 int）：
+      error: passing argument 2 of 'readNum' from incompatible pointer type
+      note: expected 'long int *' but argument is of type 'int *'
+    真因：readNum 收的是 long *，只认 long 的地址。类型不对，gcc 14 以后直接从警告升成了 error。
+    规矩：草稿纸的宽度跟函数要的一致（long）；誊进正式盒子时才按盒子宽度收窄 (int)v。
+    探针：_teacher\_tmp\t_intptr.c
+
+
+【第六部分】第 26~31 讲 · 节点速记（2026-10-18 补）
+----------------------------------------
+
+  115. 门牌号与格子，先把这一层分清
+    char s[] 当参数，等于 char *：函数收的是一张门牌号，不是一整排格子。
+    words 是"装门牌号的格子"；words[1] 取出来是门牌号，words[1][0] 才是那串里的第一个字符。
+    所以 allDigits(words[1]) 传得进 char s[]，allDigits(words[1][0]) 传不进（那是字符，不是地址）。
+
+  116. strtol 交两样东西，判三句话
+    long v = strtol(s, &end, 10);
+      v     扫出来的数（一个数字都没扫到就是 0）
+      end   停在哪一格（门牌号）
+    三条判据：
+      end == s        一个数字都没读到          → 失败
+      *end != '\0'    数读到了，后面还有尾巴    → 失败
+      *end == '\0'    整串吃完                  → 成功
+    实跑（_teacher\_tmp\t_ends.c）：
+      [128  ] v = 128   停在第 3 格   那一格编号 = 0
+      [12abc] v = 12    停在第 2 格   那一格编号 = 97
+      [abc  ] v = 0     停在第 0 格   那一格编号 = 97
+      [     ] v = 0     停在第 0 格   那一格编号 = 0
+
+  117. 为什么 end == s 就说明"一步都没走"
+    起点是 s，停点也是 s，两张门牌号一模一样 —— 说明它一格都没挪出去。
+    表里第三行 [abc] 就是：起点第 0 格，停点也是第 0 格。
+    第四行空串更极端：v 是 0，可 end 也等于 s，照样判失败 —— 所以"值是 0"不等于"读到了 0"。
+
+  118. 两关各管各的，别合成一句
+    end == s   管"一个数字都没读到"（例子 [abc]）
+    *end != '\0'  管"读到了，可后面还有东西"（例子 [12abc]，停在 2，后面剩 abc）
+    [128] 两关都过：停在第 3 格，那一格正好是 0。
+
+  119. 函数只能交回一个值，多出来的那个数得走另一条路
+    return 只能带一个数回去。readNum 要用返回值报告"成没成"，算出来的数就只能另找地方走：
+    把调用者的盒子地址递进来（long *out），函数里 *out = v 顺着门牌号写进去。
+    少了这一句，调用者的盒子一直是原值 —— hw_guard 里 r = -99 就是"没写进去"的样子。
+
+  120. 状态码的约定
+    0 = 收下；1 = 不是整数；2 = 超出范围（setCircle、setDelay 都用这套）。
+    函数只回答"卡在哪道门"，打印交给调用者：r = setLevel(tries[k], &level); 再按 r 分支打印。
+
+  121. 三道门的顺序
+    个数（n != 3）→ 是不是数字（readNum）→ 值域（inRange）→ 全过了才写状态。
+    顺序不能换：没读到数，就没得比范围；先写再查，报完错盒子已经脏了（见 113）。
+
+  122. 星号的三种身份，按位置分
+    long *out;    类型后面 —— 这是门牌号
+    *out = v;     变量前面 —— 顺门牌号开门，写进去
+    a * b;        两个东西中间 —— 乘
+
+  123. & 和 * 是一对
+    readNum(s, &v)   把 v 的门牌号交出去
+    *out = v         函数里顺着门牌号写回 v
+    一个交地址，一个顺着地址读写。
+
+  124. 格式符四个配对
+    %d 配 int    %ld 配 long    %s 配 char *    %c 配 char
+    配错编译器不拦，只有 -Wall 的 -Wformat 会提醒一句，跑起来是未定义行为（见 107）。
+
+  125. long 不一定是 8 字节
+    本机（Windows，gcc 16.1.0）sizeof(long) = 4，跟 int 一样宽；Linux 上通常是 8。
+    所以本机 (int)v 收窄看不出问题，换台机器就可能丢高位。
+
+  126. strtok 是就地动刀，不是另抄一份
+    strtok(work, " ") 直接在 work 这排格子上把分隔符改成 '\0'：
+      "set ryan" → 内存里成了 "set\0ryan\0"
+    交回的门牌号指着每一段的开头；下一次给 NULL，它接着上次停的地方往下切。
+
+  127. fgets 会把换行一起收进来
+    fgets(line, sizeof line, stdin) 读到 '\n' 也存进去，末尾再补一个 '\0'。
+    不想要这一格，就顺着找出来改成 '\0'：
+      p = strchr(line, '\n');
+      if (p != NULL) { *p = '\0'; }
+
+  128. 源码里没有数字，只有一条路（2026-10-18）
+    主人翻到 main 才发现：setLevel 里从头到尾没出现过 128 这样的数，只有 v、*level 这些门牌号。
+    源码写的只有"怎么算"：
+      tries[k]（一串字符）→ readNum 里 strtol 算出整数 → v 接住 → 三道门 → *level = (int)v
+    数字是跑到那一行才生出来的，源码里看不见 —— 所以"没看到实际数字"不是漏看，本来就没有。
+    实跑（_teacher\_tmp\t_layers.c）：
+      [main] 调用前 level = 0（盒子的门牌号交给 setLevel 了）
+          [setLevel] 调用前 v = -1
+        [readNum]  *out = 200   ← 写进 setLevel 的 v
+          [setLevel] 从 v 拿到 200
+          [setLevel]  *level = 200   ← 写进 main 的盒子
+      [main] 调用后 level = 200
+    规矩：一层只管往上一层交。readNum 写的是 setLevel 的 v，setLevel 写的是 main 的 level。
+
+  129. 结构体数组：表里一行就是一个盒子（2026-10-18）
+    struct Cmd { char *name; int nArgs; };    —— 这是画表格，不是开盒子；以后凡说"这是个 Cmd"都按这两栏装。
+    struct Cmd table[] = {{"move", 2}, {"delay", 1}, ...};   —— 按表格开一排盒子，初值按栏的顺序填。
+    table[0] 整个是一个盒子；table[0].name 是第一栏，table[0].nArgs 是第二栏。那个点就是"进门取哪一栏"。
+    第 19 讲画的是学生（专业/班号/学号/宿舍），这里换成命令（名字/参数个数），只有内容不同。
+    实跑（_teacher\_tmp\t_table_trace.c）：
+      输入 move 10 5：n = 3，idx = 0，n-1 = 2，table[idx].nArgs = 2 -> 过关
+      输入 move 10  ：n = 2，idx = 0，n-1 = 1，table[idx].nArgs = 2 -> 被拦
+      输入 跳一下   ：idx = -1（不在表里）
+    规矩：n 是切出来的词数（含命令名），n-1 才是参数个数；idx 可能是 -1，
+      必须先查 idx < 0 再用 table[idx] —— table[-1] 等于往表外面读。
