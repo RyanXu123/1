@@ -85,7 +85,7 @@ int main(void)
     long a;
     long b;
 
-    printf("输命令：move dx dy / delay ms / led level / where /home/quit\n");
+    printf("输命令：move dx dy / delay ms / led level / circle r / where / home / quit\n");
     printf("表里一共 %d 条命令。\n", nCmd);
 
     while (running && fgets(line, sizeof line, stdin) != NULL) {
