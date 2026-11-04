@@ -23,9 +23,7 @@ enum ReadStatus {
  */
 enum ReadStatus readPositive(const char *text, int *out)
 {
-    (void)text;
-    (void)out;
-    return READ_OK; /* TODO */
+
 }
 
 int main(void)
