@@ -30,7 +30,7 @@ void buffer_print(void){
 }
 int main(void){
       int n;
-
+    
     printf("写几个 ");
     scanf("%d", &n);
     for (int i = 0; i < n; i++) {
@@ -47,7 +47,7 @@ int main(void){
     }
     buffer_print();
 
-    printf("再写几个 ");
+     printf("再写几个 ");
     scanf("%d", &n);
     for (int i = 0; i < n; i++) {
         int x;
